@@ -135,7 +135,7 @@ public class Player extends EntityLiving
 
                         if (Mouse.isButtonDown(0))
                             {
-                                //level.addEntity(new BasicBullet(x + shootPoint.getX(), y + shootPoint.getY(), 8, mouseDirection, 2, this));
+                                level.addEntity(new BasicBullet(x + shootPoint.getX(), y + shootPoint.getY(), 8, mouseDirection, 2, this));
                                 numBullets--;
                                 timerforBullets = 0;
 
@@ -220,5 +220,11 @@ public class Player extends EntityLiving
     public int getNumBullets()
     {
         return numBullets;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "C'est moi le joueur qui ";
     }
 }

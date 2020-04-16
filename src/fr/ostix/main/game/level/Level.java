@@ -20,6 +20,7 @@ import java.util.List;
 public class Level
 {
     public float gravity = 0f;
+    int number = 1;
 
     public int width, height;
 
@@ -55,7 +56,7 @@ public class Level
 
     public void loadLevel(String name)
     {
-        int number = 1;
+
         int[] pixels;
 
         BufferedImage image = null;
@@ -197,12 +198,12 @@ public class Level
         if (e instanceof Player)
             {
                 e.init(this);
-                entitiesLiving.add((EntityLiving) e);
+                entitiesLiving.add(0,(EntityLiving) e);
             }
         if (e instanceof AI)
             {
                 e.init(this);
-                entitiesLiving.add((EntityLiving) e);
+                entitiesLiving.add(number,(EntityLiving) e);
             } else
             {
                 entities.add(e);
@@ -231,9 +232,10 @@ public class Level
         for (int i = 0; i < entities.size(); i++)
             {
                 Entity e = entities.get(i);
+                if (e instanceof EntityLiving)continue;
                 if (e.isRemoved()) entities.remove(e);
                 e.update();
-                if (e instanceof EntityLiving)continue;
+
                 if (e instanceof BasicBullet)
                     {
                         if (((BasicBullet) e).getTuchDown())
@@ -241,17 +243,16 @@ public class Level
                                 entitieDamage((BasicBullet)e);
                             }
 
-                        //System.out.println(((BasicBullet) e).getTuchDown());
+                        ;
                     }
             }
         for (int i = 0; i< entitiesLiving.size();i++)
             {
                 EntityLiving e = entitiesLiving.get(i);
                 if (e.isDead()){
-                    h++;
                     entitiesLiving.remove(i);
-                    System.out.println(h);
                 }
+                System.out.println(entitiesLiving.get(i).getId());
                 e.update();
             }
         guiGame.update();
@@ -260,15 +261,14 @@ public class Level
 
     private void entitieDamage(BasicBullet e)
     {
-        for (int i = 0; i < entitiesLiving.size() ; i++)
+        for (EntityLiving entityLiving : entitiesLiving)
             {
-                if (e.getId()==e.getProvider().getId())
+                if (e.getId() == e.getProvider().getId())
                     {
                         return;
-                    }
-                else if (e.getId() == entitiesLiving.get(i).getId())
+                    } else if (e.getId() == entityLiving.getId())
                     {
-                        entitiesLiving.get(i).damage(e.getProvider(),e.getDamage());
+                        entityLiving.damage(e.getProvider(), e.getDamage());
 
                     }
             }
@@ -287,9 +287,8 @@ public class Level
 
             }
 
-        for (int i = 0; i < entitiesLiving.size() ; i++)
+        for (EntityLiving entityLiving : entitiesLiving)
             {
-                EntityLiving entityLiving = entitiesLiving.get(i);
                 if (!(entityLiving instanceof Player)) entityLiving.render();
             }
         entitiesLiving.get(0).render();
@@ -297,27 +296,45 @@ public class Level
     }
 
 
+    int timer = 0;
     public boolean isSolidEntityLivingforbullets(float x,float y,float xa, float ya, Entity provider,BasicBullet bullet)
     {
-        for (int i = 0; i < entitiesLiving.size(); i++)
+        timer ++ ;
+        for (EntityLiving entityLiving : entitiesLiving)
             {
 
-                int x0 = (int) (x + xa)/16 ;
-                int x1 = (int) (x + xa)/16 ;
-                int y0 = (int) (y + ya)/16 ;
-                int y1 = (int) (y + ya)/16 ;
+                int x0 = (int) (x + xa);
+                int x1 = (int) (x + xa);
+                int y0 = (int) (y + ya+10);
+                int y1 = (int) (y + ya);
 
-
-
-                if (provider == entitiesLiving.get(i))continue;
-                if (((entitiesLiving.get(i).getBounds(0) / 16) >= x0) &&
-                        ((entitiesLiving.get(i).getBounds(2) / 16) < x1) &&
-                        ((entitiesLiving.get(i).getBounds(1) / 16) >= y0) &&
-                        ((entitiesLiving.get(i).getBounds(3) / 16) < y1))
+                if (timer >= 30)
                     {
-                        System.out.println(entitiesLiving.get(i).getId() + " est touché");
-                        bullet.setId(entitiesLiving.get(i).getId());
-                        System.out.println(entitiesLiving.get(i).toString());
+
+                        System.out.println(entityLiving.getId());
+//                        System.out.print("x0:                " + x0);
+//                        System.out.print(" x1:                " + x1);
+//                        System.out.print(" y0:                " + y0);
+//                        System.out.println(" y1:               " + y1);
+//
+//
+//                        System.out.print("EntityBounds( 0 ): " + entityLiving.getBounds(0) );
+//                        System.out.print(" EntityBounds( 2 ): " + entityLiving.getBounds(2) );
+//                        System.out.print(" EntityBounds( 1 ): " + entityLiving.getBounds(1) );
+//                        System.out.println(" EntityBounds( 3 ): " + entityLiving.getBounds(3));
+                        timer = 0;
+
+                    }
+                if (provider == entityLiving)return false;
+                if ((entityLiving.getBounds(0)  < x0) &&
+                        (entityLiving.getBounds(2)  >= x1) &&
+                        (entityLiving.getBounds(1)  < y0) &&
+                        (entityLiving.getBounds(3) >= y1))
+                    {
+                        System.out.println(entityLiving.getId() + " est touché");
+                        bullet.setId(entityLiving.getId());
+                        bullet.destroy();
+                        System.out.println(entityLiving.toString());
                         return true;
                     }
 

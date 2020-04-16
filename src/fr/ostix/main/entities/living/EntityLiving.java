@@ -45,7 +45,7 @@ public abstract class EntityLiving extends Entity
             {
                 if (backE == provider && provider instanceof BasicBullet) ((BasicBullet) provider).destroy();
             }
-        health -= damage;
+        health -= damage/2;
         if (provider instanceof BasicBullet)
             {
                 backE = provider;

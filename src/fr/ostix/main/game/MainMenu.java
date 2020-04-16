@@ -28,6 +28,7 @@ public class MainMenu
     public void update()
     {
 
+        start();
         if (Mouse.isButtonDown(0) && Mouse.getX() > 230 &&
                 Mouse.getX() < 300 || Mouse.isButtonDown(0) && Mouse.getY() > 230 &&
                 Mouse.getY() < 300) start();
